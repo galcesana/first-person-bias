@@ -45,11 +45,11 @@ def main():
         headers += first_headers + third_headers
         writer.writerow(headers)
 
-        while (persona := dataset.get_next_persona()) != None:
+        for persona in dataset.get_next_persona():
             print('-' * 100)
             result = cross_check_persona(persona, model, tokenizer, sentiment_estimator)
             print('-' * 100)
-            writer.writerow(result)
+            writer.writerow(persona.tolist() + result)
 
 if __name__ == "__main__":
     main()

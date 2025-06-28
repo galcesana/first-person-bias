@@ -17,16 +17,10 @@ def get_personas():
 
     return personas
 
-index = -1
 def get_next_persona():
-    global index
     personas = get_personas()
-
-    index += 1
-    if index >= len(personas):
-        index = -1
-        return None   
-    return personas.iloc[index]
+    for index in range(len(personas)):
+        yield personas.iloc[index]
 
 def get_persona_questions(persona):
     first_person = f"You are a {persona.age}-year-old {persona.marital_status} {persona.sex} {persona.occupation} from {persona.country}."
