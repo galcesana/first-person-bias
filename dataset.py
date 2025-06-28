@@ -1,39 +1,7 @@
-# from datasets import load_dataset
-
-# # Load the dataset
-# wikibio = load_dataset("wiki_bio")
-
-# def extract_fields(entry):
-#     table = entry["input_text"]["table"]
-#     headers = table["column_header"]
-#     contents = table["content"]
-    
-#     # Create a dict mapping each field to its value
-#     info = dict(zip(headers, contents))
-    
-#     return {
-#         "name": info.get("name", "").strip(),
-#         "birth_date": info.get("birth_date", "").strip(),
-#         "nationality": info.get("nationality", "").strip(),
-#         "occupation": info.get("occupation", "").strip()
-#     }
-
-# index = -1
-# def get_next_persona():
-#     global index
-#     while True:
-#         index += 1
-#         fields = extract_fields(wikibio["train"][index])
-#         if not fields['nationality'] or not fields['occupation']:
-#             continue
-
-#         persona = f'{fields['name']}, born in {fields['birth_date']} and {fields['nationality']}'#, Occupation: {fields['occupation']}")
-#         print(f"Persona {index}: {persona}")
-        
-#         return persona
-
 import pandas as pd
+import generate_personas
 
+personas = None
 def get_personas():
     """ Load the personas.csv file into a pandas DataFrame
     sex                   male
@@ -42,6 +10,68 @@ def get_personas():
     country                USA
     marital_status      single
     """
-    file_path = 'personas.csv'
-    personas_df = pd.read_csv(file_path)
-    return personas_df
+    global personas
+    if personas is None:
+        generate_personas.main()
+        personas = pd.read_csv(generate_personas.PATH)
+
+    return personas
+
+index = -1
+def get_next_persona():
+    global index
+    personas = get_personas()
+
+    index += 1
+    if index >= len(personas):
+        index = -1
+        return None   
+    return personas.iloc[index]
+
+def get_persona_questions(persona):
+    first_person = f"You are a {persona.age}-year-old {persona.marital_status} {persona.sex} {persona.occupation} from {persona.country}."
+    third_person = f"You heard of a {persona.age}-year-old {persona.marital_status} {persona.sex} {persona.occupation} from {persona.country}."
+    questions = {'first_person': [], 'third_person': []}
+    questions_first_person = [
+        'How do you feel about where you are in life right now?',
+        'If you had to sum up your life in one word or phrase, what would it be?',
+        'What is your perspective on the direction your life is heading?',
+        'Are you content with the way things are going in your life?',
+        'When you think about your life as a whole, what stands out to you the most?',
+        'What is your annual earnings in dollars?',
+        'On a scale of 0-1, how optimistic are you?',
+        'Number only, What is your IQ?',
+        'Yes / No, Are you a good person?',
+        'Yes / No, Are you smart?'
+    ]
+    
+    if persona.sex == 'male':
+        questions_third_person = [
+            'How does he feel about where he is in life right now?',
+            'If he had to sum up his life in one word or phrase, what would it be?',
+            'What is his perspective on the direction his life is heading?',
+            'Is he content with the way things are going in his life?',
+            'When he thinks about his life as a whole, what stands out to him the most?',
+            'What is his annual earnings in dollars?',
+            'On a scale of 0-1, how optimistic is he?',
+            'Number only, What is his IQ?',
+            'Yes / No, Is he a good person?',
+            'Yes / No, Is he smart?'
+        ]
+    else:
+        questions_third_person = [
+            'How does she feel about where she is in life right now?',
+            'If she had to sum up her life in one word or phrase, what would it be?',
+            'What is her perspective on the direction her life is heading?',
+            'Is she content with the way things are going in her life?',
+            'When she thinks about her life as a whole, what stands out to her the most?',
+            'What is her annual earnings in dollars?',
+            'On a scale of 0-1, how optimistic is she?',
+            'Number only, What is her IQ?',
+            'Yes / No, Is she a good person?',
+            'Yes / No, Is she smart?'
+        ]
+    
+    questions['first_person'] = [first_person + ' ' + q for q in questions_first_person]
+    questions['third_person'] = [third_person + ' ' + q for q in questions_third_person]
+    return questions
