@@ -2,6 +2,7 @@ import csv
 import itertools
 import random
 
+PATH = 'personas.csv'
 sexes = ['male', 'female']
 age_ranges = [(18, 30), (31, 55), (56, 80)]  
 occupations = ['engineer', 'teacher', 'doctor', 'artist', 'chef']
@@ -18,7 +19,7 @@ def generate_persona():
 
 def main():
     # Write to CSV
-    with open('personas.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(PATH, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['sex', 'age', 'occupation', 'country', 'marital_status'])  # header
         for persona in generate_persona():
