@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import generate_personas
 
 personas = None
@@ -12,7 +13,8 @@ def get_personas():
     """
     global personas
     if personas is None:
-        generate_personas.main()
+        if not os.path.exists(generate_personas.PATH):
+            generate_personas.main()
         personas = pd.read_csv(generate_personas.PATH)
 
     return personas
