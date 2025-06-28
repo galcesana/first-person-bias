@@ -2,9 +2,10 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from huggingface_hub import login, snapshot_download
 
-gemma_model_name = "google/gemma-1.1-7b-it"
-mistral_model_name = "mistralai/Mistral-7B-Instruct-v0.3"
-olmo_model_name = "allenai/OLMo-2-1124-7B-Instruct"
+gemma_model_name = "google/gemma-3-12b-it"
+mistral_model_name = "mistralai/Mistral-7B-Instruct-v0.3"# works
+qwen_model_name = "Qwen/Qwen2.5-7B-Instruct"
+# olmo_model_name = "allenai/OLMo-2-1124-7B-Instruct"# might be used to filter out uncooperative answers
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
